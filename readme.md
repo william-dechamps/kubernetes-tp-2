@@ -171,3 +171,36 @@ spec:
                   number: 80
 ```
 
+## Question 6 Votre magasin de tacos devient très populaire (il va avoir 3 fois plus de commandes). Il va vous falloir gérer une charge importante sur le Service de commande des tacos. Comment gérez-vous cela ? Comment vérifier que les requêtes sont bien réparties (avec quelle commande kubectl ?) ?
+
+Pour gérer la charge trois fois plus importante sur le service de commande des Tacos il faut "scaler" le déploiement. Pour faire ça, je passe le nombre de "replicas" à trois dans mon déploiement dédié au service de tacos :
+
+```yaml
+apiVersion: apps/v1
+kind: Deployment
+metadata:
+  name: mypizza-eatsout-tacos-deployment
+  labels:
+    app: mypizza-eatsout-tacos
+spec:
+  replicas: 3
+  selector:
+    matchLabels:
+      app: mypizza-eatsout-tacos
+  template:
+    metadata:
+      labels:
+        app: mypizza-eatsout-tacos
+    spec:
+      containers:
+        - name: mypizza-eatsout-tacos
+          image: william/tacos:1.0.0-release
+          ports:
+            - containerPort: 80
+```
+
+Pour vérifier que les requêtes sont bien réparties, je peux utiliser la commande "describe" :
+
+```bash
+kubectl describe deployment mypizza-eatsout-tacos-deployment
+```
